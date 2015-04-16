@@ -36,6 +36,7 @@ public class SearchDevicesView extends BaseView{
 	private Bitmap bitmap1;
 	private Bitmap bitmap2;
 	
+	private OnClickListener mOnClickListener;
 	public boolean isSearching() {
 		return isSearching;
 	}
@@ -117,11 +118,15 @@ public class SearchDevicesView extends BaseView{
 		
 		if(rectF.contains(event.getX(), event.getY())){
 			if(D) Log.d(TAG, "click search device button");
-			if(!isSearching()) {
-				setSearching(true);
-			}else{
-				setSearching(false);
-			}
+			if (mOnClickListener != null) {
+				 
+	            mOnClickListener.onClick(this);
+	        }
 		}
 	}
+	
+	  public void setOnClickListener(OnClickListener l) {
+	        mOnClickListener = l;
+	  }
+
 }

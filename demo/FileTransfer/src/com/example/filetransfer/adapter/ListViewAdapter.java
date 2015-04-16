@@ -49,7 +49,8 @@ public class ListViewAdapter extends BaseAdapter{
 		if(convertView == null){
 			convertView = layoutInflater.inflate(R.layout.itemview,null);
 			listItemView = new ListItemView();
-			listItemView.mTextView = (TextView) convertView.findViewById(R.id.ip_txt);
+			listItemView.mTextView1 = (TextView) convertView.findViewById(R.id.ip_txt);
+			listItemView.mTextView2 = (TextView) convertView.findViewById(R.id.distance_txt);
 			listItemView.mButton1 = (Button) convertView.findViewById(R.id.btn_send);
 			listItemView.mRelativeLayout = (RelativeLayout) convertView.findViewById(R.id.item_layout2);
 			listItemView.mProgressBar = (ProgressBar) convertView.findViewById(R.id.file_pro);
@@ -59,7 +60,8 @@ public class ListViewAdapter extends BaseAdapter{
 			listItemView = (ListItemView) convertView.getTag();
 		}
 		User user = lists.get(position);
-		listItemView.mTextView.setText(user.getIp());
+		listItemView.mTextView1.setText(user.getIp());
+		listItemView.mTextView2.setText(user.getDistance()+"m");
 		switch(user.getFileState()){
 		case UserConst.NOFILETRANSFER:
 			listItemView.mButton1.setVisibility(View.VISIBLE);
@@ -87,7 +89,8 @@ public class ListViewAdapter extends BaseAdapter{
 		return convertView;
 	}
 	class ListItemView{
-		TextView mTextView;
+		TextView mTextView1;
+		TextView mTextView2;
 		Button mButton1;
 		RelativeLayout mRelativeLayout;
 		ProgressBar mProgressBar;

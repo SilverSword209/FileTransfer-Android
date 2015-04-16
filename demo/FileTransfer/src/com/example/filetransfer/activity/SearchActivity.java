@@ -10,7 +10,11 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
+import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class SearchActivity extends Activity {
 	private NetHelper mNetHelper;
@@ -23,11 +27,26 @@ public class SearchActivity extends Activity {
 		setContentView(R.layout.activity_search);
 		mApplication = (myApplication) getApplication();
 		mNetHelper=mApplication.getNetHelper();
-		mApplication.setHandler(searchHandler);
+		Log.v("Handler", "add_searchAcitivity_handler");
+		mApplication.putHandler("SearchActivity",searchHandler);
 		mNetHelper.startSearch();
 		findViews();
 		search_device_view.setSearching(true);
 		search_device_view.setWillNotDraw(false);
+		search_device_view.setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				SearchActivity.this.stop();
+			}
+		});
+	}
+	private void stop()
+	{
+		Handler handler = mApplication.getHandler("MainActivity");
+		if(handler!=null) handler.sendEmptyMessage(MsgConst.STOPSEARCH);
+		SearchActivity.this.finish();
 	}
 	private void findViews()
 	{
@@ -35,12 +54,13 @@ public class SearchActivity extends Activity {
 		mTextView=(TextView)findViewById(R.id.textView1);
 	}
 	@Override  
-    protected void onResume() {  
-        super.onResume();  
-        mApplication.setHandler(searchHandler);  
+    protected void onDestroy() {  
+        super.onDestroy();  
+        Log.v("Handler", "remove_searchAcitivity_handler");
+        mApplication.removeHandler("SearchActivity");  
     }  
 
-	private Handler searchHandler = new Handler(){
+	private  Handler searchHandler = new Handler(){
 		@Override
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub

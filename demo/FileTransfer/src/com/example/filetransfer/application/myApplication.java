@@ -1,6 +1,9 @@
 package com.example.filetransfer.application;
 
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.example.filetransfer.net.NetHelper;
 
 import android.app.Application;
@@ -10,7 +13,7 @@ public class myApplication extends Application {
 	
     
 	private NetHelper mNetHelper=null;
-	private Handler handler=null;
+	private Map<String,Handler> handlers=new HashMap<String,Handler>();
     @Override
     public void onCreate()
     {
@@ -25,12 +28,16 @@ public class myApplication extends Application {
     {
     	return mNetHelper;
     }
-    public void setHandler(Handler mHandler)
+    public void putHandler(String activity_name,Handler mHandler)
     {
-    	handler = mHandler;
+    	handlers.put(activity_name,mHandler);
     }
-    public Handler getHandler()
+    public Handler getHandler(String activity_name)
     {
-    	return handler;
+    	return handlers.get(activity_name);
+    }
+    public void removeHandler(String activity_name)
+    {
+    	handlers.remove(activity_name);
     }
 }

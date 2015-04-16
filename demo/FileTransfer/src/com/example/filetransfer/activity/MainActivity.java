@@ -1,10 +1,16 @@
 package com.example.filetransfer.activity;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.example.filetransfer.adapter.ListViewAdapter;
 import com.example.filetransfer.application.myApplication;
+import com.example.filetransfer.data.MsgConst;
 import com.example.filetransfer.data.User;
 import com.example.filetransfer.net.NetHelper;
 
@@ -17,6 +23,7 @@ import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -30,7 +37,6 @@ public class MainActivity extends Activity {
 	private ListView userlist;
 	private NetHelper mNetHelper;
 	private myApplication mApplication;
-	private Map<String,User> users;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -38,9 +44,10 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 		findViews();
 		mApplication = (myApplication) getApplication();
-		mNetHelper = new NetHelper();
+		mNetHelper = new NetHelper(this);
 		mApplication.setNetHelper(mNetHelper);
-		mApplication.setHandler(mainHandler);
+		Log.v("Handler", "add_mainAcitivity_handler");
+		mApplication.putHandler("MainActivity",mainHandler);
 		if(!isWifiActive()){	//若wifi没有打开，提示
         	Toast.makeText(this, R.string.wifi_fail, Toast.LENGTH_LONG).show();
         }
@@ -56,14 +63,29 @@ public class MainActivity extends Activity {
 	}
 	private void refreshListView()
 	{
-		Map<String,User> users = mNetHelper.getUsers();
-		List<User> lists = sortUsers(users);
+		Map<String,User> usermap = mNetHelper.getUsers();
+		List<User> lists = sortUsers(usermap);
 		ListViewAdapter myAdapter = new ListViewAdapter(this,lists);
 		userlist.setAdapter(myAdapter);
 	}
-	private List<User> sortUsers(Map<String, User> users2) {
+	private List<User> sortUsers(Map<String, User> users) {
 		// TODO Auto-generated method stub
-		return null;
+		ArrayList<User> lists = new ArrayList<User>();
+		//if(users == null) Log.v("USERLIST", "NULL");
+		if(users!=null){
+		Iterator it = users.entrySet().iterator();
+		
+		while(it.hasNext()){
+			Map.Entry<String, User> entry=(Entry<String, User>) it.next();   
+			lists.add(entry.getValue());}
+		Collections.sort(lists, new Comparator<User>(){       
+			@Override      public int compare(User o1, User o2) {         
+				if(o1.getDistance()<o1.getDistance()) return 1;
+				return 0;
+				}     
+			});
+		}
+		return lists;
 	}
 	private void findViews() {
 		// TODO Auto-generated method stub
@@ -86,16 +108,22 @@ public class MainActivity extends Activity {
 		return false;
 	}
 	@Override  
-    protected void onResume() {  
-        super.onResume();  
-       // mApplication.setHandler(mainHandler);  
+    protected void onDestroy() {  
+        super.onDestroy(); 
+        Log.v("Handler", "remove_mainAcitivity_handler");
+        mApplication.removeHandler("MainActivity"); 
     }  
 
 	private Handler mainHandler = new Handler(){
 		@Override
 		public void handleMessage(Message msg) {
 			// TODO Auto-generated method stub
-			
+			switch(msg.what){
+			case MsgConst.STOPSEARCH:
+				Log.v("STOPSEARCH", "hello");
+				refreshListView();
+				break;
+			}
 		}
 	};
 	
